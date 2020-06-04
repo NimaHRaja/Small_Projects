@@ -1,0 +1,5 @@
+options(stringsAsFactors = FALSE)
+library("XML")
+library(dplyr)
+library(ggplot2)
+library(tidyr)
