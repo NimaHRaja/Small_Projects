@@ -1,0 +1,261 @@
+---
+title: "Sleep_Report"
+author: "Nima Hamedani-Raja"
+date: "25/06/2020"
+output: 
+  html_document: 
+    fig_height: 6
+    fig_width: 9
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r init}
+source("init.R")
+```
+
+# daily_sleep
+
+```{r daily_sleep}
+source("sleep_daily.R")
+
+full_join(
+    DF_night %>% select(night_length, Date),
+    DF_aft %>% select(nap_length, Date), 
+    by = "Date") %>% 
+    melt(id.vars = "Date") %>% 
+    filter(!is.na(value)) %>%
+    # mutate(sleep = factor(variable, levels = c("nap_length", "night_length"))) %>%
+    ggplot(aes(x = Date, y = value, fill = variable)) + 
+    geom_bar(stat = "identity", position = "stack")
+```
+
+# 24h_rolling  
+
+```{r 24h_rolling}
+source("sleep_24h.R")
+
+DF_24h_summary %>% 
+  filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
+  arrange(Date) %>% ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
+
+rbind(
+  DF_24h_summary %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days"),
+  DF_24h_summary %>%
+    mutate(subset = "all")) %>%
+  filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
+  ggplot(aes(x = sleep_24h, colour = subset)) + geom_density()
+
+rbind(
+  DF_24h_summary %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days"),
+  DF_24h_summary %>%
+    mutate(subset = "all")) %>%
+  filter(difftime(Date, min(Date), units = "days") >= 1) %>%
+  ggplot(aes(x = subset , y = sleep_24h, fill = subset)) + geom_boxplot()
+
+rbind(
+  DF_24h_summary %>%
+    filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
+    mutate(subset = "all"),
+  DF_24h_summary %>%
+    filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days")) %>%
+  filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
+  ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+# nap
+
+```{r nap}
+source("nap_desctiptive.R")
+
+rbind(
+  DF_aft %>%
+    mutate(subset = "all"),
+  DF_aft %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days")) %>%
+  filter(Date != '2020-06-17') %>% 
+  ggplot(aes(x = nap_start_time, colour = subset)) + geom_density()
+
+rbind(
+  DF_aft %>%
+    mutate(subset = "all"),
+  DF_aft %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days")) %>%
+  filter(Date != '2020-06-17') %>% 
+  ggplot(aes(x = nap_end_time, colour = subset)) + geom_density()
+
+rbind(
+  DF_aft %>%
+    mutate(subset = "all"),
+  DF_aft %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days")) %>%
+  filter(Date != '2020-06-17') %>% 
+  ggplot(aes(x = nap_length, colour = subset)) + geom_density()
+
+DF_aft %>% filter(Date != '2020-06-17') %>% 
+  # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
+  ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
+  geom_point(colour = "green") +
+  geom_text(colour = "red") + 
+  geom_smooth(method = "lm")
+
+DF_aft %>% filter(Date != '2020-06-17') %>% 
+  select(Date, nap_start_time, nap_end_time) %>% 
+  melt(id.vars = "Date") %>% 
+  ggplot(aes(x = Date, y = value, colour = variable)) + 
+  geom_line() + geom_point()
+
+DF_aft %>% filter(Date != '2020-06-17') %>% 
+  select(Date, nap_length) %>% 
+  ggplot(aes(x = Date, y = nap_length))+ 
+  geom_bar(stat = "identity", fill = "blue")
+```
+
+# night
+
+```{r night}
+source("night_descriptive.R")
+
+rbind(
+    DF_night %>%
+        mutate(subset = "all"),
+    DF_night %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+        mutate(subset = "last 7 days")) %>%
+    filter(Date != Sys.Date()) %>%
+    ggplot(aes(x = night_start_time, colour = subset)) + geom_density()
+
+rbind(
+    DF_night %>%
+        mutate(subset = "all"),
+    DF_night %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+        mutate(subset = "last 7 days")) %>%
+    # filter(Date != '2020-06-17') %>% 
+    filter(Date != Sys.Date()) %>%
+    ggplot(aes(x = night_end_time, colour = subset)) + geom_density()
+
+rbind(
+    DF_night %>%
+        filter(!(Date == Sys.Date() & strftime(night_start, format="%H:%M:%S") < "16:00:00")) %>%
+        mutate(subset = "all"),
+    DF_night %>%
+        filter(!(Date == Sys.Date() & strftime(night_start, format="%H:%M:%S") < "16:00:00")) %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+        mutate(subset = "last 7 days")) %>%
+    ggplot(aes(x = night_length, colour = subset)) + geom_density()
+
+DF_night %>% 
+    filter(Date != Sys.Date()) %>%
+    ggplot(aes(x = night_start_time, y = night_end_time, label = day_month)) + 
+    geom_point(colour = "green") + 
+    geom_text(colour = "red") + 
+    geom_smooth(method = "lm")
+
+DF_night %>% 
+    # filter(Date != '2020-06-17') %>% 
+    select(Date, night_start_time, night_end_time) %>% 
+    melt(id.vars = "Date") %>% 
+    ggplot(aes(x = Date, y = value, colour = variable)) + 
+    geom_line() + geom_point()
+
+DF_night %>% 
+    filter(!(Date == Sys.Date() & strftime(night_start, format="%H:%M:%S") < "16:00:00")) %>%
+    ggplot(aes(x = Date, y = night_length))+ 
+    geom_bar(stat = "identity", fill = "blue")
+```
+
+# start_end_boxplots
+
+```{r start_end_boxplots}
+rbind(
+  DF_night %>%
+    filter(Date != Sys.Date()) %>%
+    filter(Date != '2020-06-17') %>% 
+    # filter(night_start_time >= as.POSIXct("18:00:00", format="%H:%M:%S")) %>%
+    as.data.frame() %>% select(night_start_time,night_end_time) %>% melt(),
+  DF_aft %>% 
+    filter(Date != '2020-06-17') %>% 
+    # filter(nap_end_time >= as.POSIXct("12:00:00", format="%H:%M:%S")) %>% 
+    as.data.frame() %>% 
+    select(nap_start_time,nap_end_time) %>% melt()) %>%
+  ggplot(aes(x = variable , y = value, fill = variable)) + geom_boxplot()
+```
+
+# sleep_24h_distribution
+
+```{r sleep_24h_distribution}
+source("sleep_24h_distribution.R")
+
+sleep24h_distribution_flat %>% select(sleep_24h_value, num_minutes) %>% 
+    mutate(sleep_24h_value = sleep_24h_value / 60) %>%
+    group_by(sleep_24h_value) %>%
+    summarise(num_minutes = sum(num_minutes)) %>% 
+    ungroup() %>%
+    mutate(num_minutes = num_minutes/sum(num_minutes)) %>%
+    ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + 
+    geom_histogram(fill = "Blue")
+
+sleep24h_distribution_flat %>% select(sleep_24h_value, num_minutes) %>% 
+    mutate(sleep_24h_value = sleep_24h_value / 60) %>%
+    group_by(sleep_24h_value) %>%
+    summarise(num_minutes = sum(num_minutes)) %>% 
+    ungroup() %>%
+    mutate(num_minutes = num_minutes/sum(num_minutes)) %>%
+    ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + geom_density(colour = "Blue")
+
+sleep24h_distribution_flat %>% 
+    filter(difftime(Sys.time(), Date, units = "days") < 3) %>% 
+    select(sleep_24h_value, num_minutes) %>% 
+    mutate(sleep_24h_value = sleep_24h_value / 60) %>%
+    group_by(sleep_24h_value) %>%
+    summarise(num_minutes = sum(num_minutes)) %>% 
+    ungroup() %>%
+    mutate(num_minutes = num_minutes/sum(num_minutes)) %>%
+    ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + geom_density(colour = "Blue") +
+        ggtitle("past 3 days")
+```
+
+# night_start v.
+
+```{r night_start_v}
+inner_join(DF_aft, DF_night, c("Date", "day_month")) %>% 
+  filter(as.POSIXct(Start.y) > as.POSIXct(End.x)) %>% 
+  ggplot(aes(x = nap_end_time, y = night_start_time, label = day_month)) + 
+  geom_point(colour = "green") +
+  geom_text(colour = "red") +
+  geom_smooth(method = "lm")
+
+inner_join(DF_aft, DF_night, c("Date", "day_month")) %>%
+  mutate(nap_length = 
+           difftime(as.POSIXct(End.x), as.POSIXct(Start.x), "minutes") %>% as.numeric()) %>% 
+  filter(as.POSIXct(Start.y) > as.POSIXct(End.x)) %>% 
+  ggplot(aes(x = nap_length, y = night_start_time, label = day_month)) + 
+  geom_point(colour = "green") +
+  geom_text(colour = "red") +
+  geom_smooth(method = "lm")
+
+DF_night %>% 
+    # filter(Date != Sys.Date()) %>%
+    mutate(Date = Start) %>% 
+    inner_join(DF_24h_summary, by = "Date") %>%
+    filter(sleep_24h > 6) %>%
+    ggplot(aes(x = sleep_24h, y= night_start_time, label = day_month)) + 
+    geom_point(colour = "green") +
+    geom_text(colour = "red") +
+    geom_smooth(method = "lm")
+
+```
