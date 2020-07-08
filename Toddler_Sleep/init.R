@@ -1,17 +1,19 @@
+#### Init
+
 options(stringsAsFactors = FALSE)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
 
-DF_raw <- read.csv("Sleep_log.csv")
+#### Read and Clean
 
+DF_raw <- read.csv("Sleep_log.csv")
 
 DF_raw <- DF_raw %>% 
     mutate(Start = as.POSIXct(Start)) %>%
     mutate(End = as.POSIXct(End)) %>%
     mutate(Start2 = Start + 24*60*60) %>%
     mutate(End2 = End + 24*60*60)
-
 
 DF_aft <- 
     DF_raw %>% 
@@ -28,8 +30,7 @@ DF_aft <-
     mutate(day_month = format(Start,"%m-%d"))
 
 DF_aft <- 
-    DF_aft %>% filter(Date != '2020-06-17')
-
+    DF_aft %>% filter(Date != '2020-06-17') # Anomaly
 
 DF_night <- 
     DF_raw %>% 
