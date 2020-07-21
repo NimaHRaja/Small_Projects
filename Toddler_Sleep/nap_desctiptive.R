@@ -167,3 +167,21 @@ DF_aft %>%
     # filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = Date, y = nap_length))+ 
     geom_bar(stat = "identity", fill = "blue")
+
+###### Prob_nap 
+prob_nap <-
+    data.frame(time = seq(1,24*60) * 60 - 3660) %>%
+    mutate(time = Sys.Date() %>% as.POSIXct() + time) %>%
+    filter(time > min(DF_aft$nap_start_time - 10 * 60)) %>%
+    filter(time < max(DF_aft$nap_end_time + 10 * 60)) %>%
+    mutate(join_value = 1) %>%
+    full_join(DF_aft %>% select(Date, nap_start_time, nap_end_time) %>% mutate(join_value = 1), 
+              by = "join_value") %>% 
+    mutate(value = if_else(time > nap_start_time & time < nap_end_time, 1, 0)) %>%
+    mutate(value = value + if_else(time == nap_start_time | time == nap_end_time, 1/2,0))%>% 
+    group_by(time) %>% 
+    summarise(prob = sum(value)) %>% 
+    ungroup() %>%
+    mutate(prob = prob / max(prob))
+
+prob_nap %>% ggplot(aes(x = time, y = prob)) + geom_point(colour = "blue")

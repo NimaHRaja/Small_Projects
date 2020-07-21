@@ -45,3 +45,6 @@ DF_night <-
     mutate(night_end_time = 
                strftime(night_end, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
     mutate(day_month = format(Start,"%m-%d"))
+
+DF_night <- 
+    DF_night %>% filter(Date != Sys.Date()) # today's nap shouldn't be classified as night.

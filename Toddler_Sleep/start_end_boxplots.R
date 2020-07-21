@@ -2,25 +2,36 @@ source("init.R")
 
 rbind(
     DF_night %>% 
-        filter(Date != Sys.Date()) %>%
-        # filter(night_start_time >= as.POSIXct("18:00:00", format="%H:%M:%S")) %>%
         as.data.frame() %>% select(night_start_time,night_end_time) %>% melt(),
     DF_aft %>% 
-        # filter(nap_end_time >= as.POSIXct("12:00:00", format="%H:%M:%S")) %>% 
-        as.data.frame() %>% 
-        select(nap_start_time,nap_end_time) %>% melt()) %>%
+        as.data.frame() %>% select(nap_start_time,nap_end_time) %>% melt()) %>%
     ggplot(aes(x = variable , y = value, fill = variable)) + geom_boxplot()
+
 
 rbind(
-    DF_night %>%
-        filter(Date != Sys.Date()) %>%
-        filter(Date != '2020-06-17') %>% 
-        # filter(night_start_time >= as.POSIXct("18:00:00", format="%H:%M:%S")) %>%
+    DF_night %>%  
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
         as.data.frame() %>% select(night_start_time,night_end_time) %>% melt(),
     DF_aft %>% 
-        filter(Date != '2020-06-17') %>% 
-        # filter(nap_end_time >= as.POSIXct("12:00:00", format="%H:%M:%S")) %>% 
-        as.data.frame() %>% 
-        select(nap_start_time,nap_end_time) %>% melt()) %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+        as.data.frame() %>% select(nap_start_time,nap_end_time) %>% melt()) %>%
     ggplot(aes(x = variable , y = value, fill = variable)) + geom_boxplot()
 
+
+
+rbind(
+    DF_night %>% 
+        as.data.frame() %>% select(night_start_time,night_end_time) %>% melt() %>%
+        mutate(subset = "All"),
+    DF_aft %>% 
+        as.data.frame() %>% select(nap_start_time,nap_end_time) %>% melt() %>%
+        mutate(subset = "All"),
+    DF_night %>%  
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+        as.data.frame() %>% select(night_start_time,night_end_time) %>% melt() %>%
+        mutate(subset = "last 7 days"),
+    DF_aft %>% 
+        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+        as.data.frame() %>% select(nap_start_time,nap_end_time) %>% melt() %>%
+        mutate(subset = "last 7 days")) %>%
+    ggplot(aes(x = variable , y = value, fill = subset)) + geom_boxplot()
