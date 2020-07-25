@@ -1,6 +1,6 @@
 source("init.R")
 
-##### nap_start distribution #####
+#### nap_start distribution ####
 
 # DF_aft %>% 
 #     ggplot(aes(x = nap_start_time)) + geom_density(colour = "blue")
@@ -40,7 +40,7 @@ rbind(
 #     # filter(Date != '2020-06-17') %>% 
 #     ggplot(aes(y = nap_start_time, fill = subset)) + geom_boxplot()
 
-##### nap_end distribution #####
+#### nap_end distribution ####
 
 # DF_aft %>% 
 #     ggplot(aes(x = nap_end_time)) + geom_density(colour = "blue")
@@ -81,7 +81,7 @@ rbind(
 #     # filter(Date != '2020-06-17') %>% 
 #     ggplot(aes(x = subset, y = nap_end_time, fill = subset)) + geom_boxplot()
 
-###### nap_length distribution #####
+#### nap_length distribution ####
 
 # DF_aft %>% 
 #     ggplot(aes(x = nap_length)) + geom_density(colour = "blue")
@@ -119,7 +119,7 @@ rbind(
 #     filter(Date != '2020-06-17') %>% 
 #     ggplot(aes(y = nap_length, fill = subset)) + geom_boxplot()
 
-###### nap_end v nap_start #####
+#### nap_end v nap_start ####
 
 # DF_aft %>%
 #     ggplot(aes(x = nap_start_time, y = nap_end_time)) + geom_point(colour = "red")
@@ -141,14 +141,15 @@ rbind(
 #     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month, colour = subset)) + 
 #     geom_point()
 
-
 DF_aft %>% 
+    mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
     # filter(Date != '2020-06-17') %>% 
     # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
     geom_point(colour = "green") +
-    geom_text(colour = "red") + 
-    geom_smooth(method = "lm")
+    geom_text(aes(colour = recent)) + 
+    geom_smooth(method = "lm") + 
+    theme(legend.position = "none")
 
 # rbind(
 #     DF_aft %>%
@@ -163,7 +164,7 @@ DF_aft %>%
 #     geom_text() + 
 #     geom_smooth(method = "lm")
 
-###### start/end/length v time
+#### start/end/length v time ####
 
 DF_aft %>% 
     # filter(Date != '2020-06-17') %>% 
@@ -177,7 +178,8 @@ DF_aft %>%
     ggplot(aes(x = Date, y = nap_length))+ 
     geom_bar(stat = "identity", fill = "blue")
 
-###### Prob_nap 
+#### Prob_nap ####
+
 prob_nap <-
     data.frame(time = seq(1,24*60) * 60 - 3660) %>%
     mutate(time = Sys.Date() %>% as.POSIXct() + time) %>%
@@ -189,9 +191,9 @@ prob_nap <-
     mutate(value = if_else(time > nap_start_time & time < nap_end_time, 1, 0)) %>%
     mutate(value = value + if_else(time == nap_start_time | time == nap_end_time, 1/2,0))%>% 
     group_by(time) %>% 
-    summarise(prob = sum(value)) %>% 
+    summarise(num_days = sum(value)) %>% 
     ungroup() %>%
-    mutate(prob = prob / max(prob))
+    mutate(prob = num_days / (max(num_days) + no_nap_days))
 
 prob_nap %>% ggplot(aes(x = time, y = prob)) + geom_point(colour = "blue")
 
@@ -205,9 +207,9 @@ get_prob_nap_start <- function(df_local, subset){
                   by = "join_value") %>% 
         mutate(value = if_else(time >= nap_start_time, 1, 0)) %>%
         group_by(time) %>% 
-        summarise(prob = sum(value)) %>% 
+        summarise(num_days = sum(value)) %>% 
         ungroup() %>%
-        mutate(prob = prob / max(prob)) %>%
+        mutate(prob = num_days / (max(num_days) + no_nap_days)) %>%
         mutate(subset = subset)
 }
 
@@ -230,9 +232,9 @@ get_prob_nap_end <- function(df_local, subset){
                   by = "join_value") %>% 
         mutate(value = if_else(time >= nap_end_time, 1, 0)) %>%
         group_by(time) %>% 
-        summarise(prob = sum(value)) %>% 
+        summarise(num_days = sum(value)) %>% 
         ungroup() %>%
-        mutate(prob = prob / max(prob)) %>%
+        mutate(prob = num_days / (max(num_days) + no_nap_days)) %>%
         mutate(subset = subset)
 }
 

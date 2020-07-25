@@ -128,12 +128,12 @@ rbind(
   ggplot(aes(x = nap_length, colour = subset)) + geom_density()
 
 DF_aft %>% 
-  # filter(Date != '2020-06-17') %>% 
-  # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
+  mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
   ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
   geom_point(colour = "green") +
-  geom_text(colour = "red") + 
-  geom_smooth(method = "lm")
+  geom_text(aes(colour = recent)) + 
+  geom_smooth(method = "lm") + 
+  theme(legend.position = "none")
 
 DF_aft %>% 
   # filter(Date != '2020-06-17') %>% 

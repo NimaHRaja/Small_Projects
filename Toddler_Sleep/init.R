@@ -5,6 +5,8 @@ library(dplyr)
 library(ggplot2)
 library(reshape2)
 
+no_nap_days <- 2
+
 #### Read and Clean ####
 
 DF_raw <- read.csv("Sleep_log.csv")
