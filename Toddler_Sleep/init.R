@@ -1,11 +1,11 @@
-#### Init
+#### Init ####
 
 options(stringsAsFactors = FALSE)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
 
-#### Read and Clean
+#### Read and Clean ####
 
 DF_raw <- read.csv("Sleep_log.csv")
 
@@ -15,7 +15,7 @@ DF_raw <- DF_raw %>%
     mutate(Start2 = Start + 24*60*60) %>%
     mutate(End2 = End + 24*60*60)
 
-#### Create DF_aft  
+#### Create DF_aft ####
 
 DF_aft <- 
     DF_raw %>% 
@@ -31,10 +31,11 @@ DF_aft <-
                strftime(nap_end, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
     mutate(day_month = format(Start,"%m-%d"))
 
+# removing anomalies (days she didn't nap)
 DF_aft <- 
-    DF_aft %>% filter(Date != '2020-06-17') # Anomaly
+    DF_aft %>% filter(Date != '2020-06-17') %>% filter(Date != '2020-06-17') 
 
-#### Create DF_night
+#### Create DF_night ####
 
 DF_night <- 
     DF_raw %>% 
@@ -51,4 +52,4 @@ DF_night <-
     mutate(day_month = format(Start,"%m-%d"))
 
 DF_night <- 
-    DF_night %>% filter(Date != Sys.Date()) # today's nap shouldn't be classified as night.
+    DF_night %>% filter(Date != Sys.Date()) # today's nap shouldn't be classified as night sleep.
