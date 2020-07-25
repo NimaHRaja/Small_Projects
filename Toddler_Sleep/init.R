@@ -15,6 +15,8 @@ DF_raw <- DF_raw %>%
     mutate(Start2 = Start + 24*60*60) %>%
     mutate(End2 = End + 24*60*60)
 
+#### Create DF_aft  
+
 DF_aft <- 
     DF_raw %>% 
     group_by(Date = as.Date(Start)) %>% 
@@ -31,6 +33,8 @@ DF_aft <-
 
 DF_aft <- 
     DF_aft %>% filter(Date != '2020-06-17') # Anomaly
+
+#### Create DF_night
 
 DF_night <- 
     DF_raw %>% 

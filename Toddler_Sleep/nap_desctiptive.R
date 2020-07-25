@@ -24,7 +24,10 @@ rbind(
         mutate(subset = "all"),
     DF_aft %>%
         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days")) %>%
+        mutate(subset = "last 7 days"),
+    DF_aft %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+        mutate(subset = "last 28 days")) %>%
     # filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = nap_start_time, colour = subset)) + geom_density()
 
@@ -62,7 +65,10 @@ rbind(
         mutate(subset = "all"),
     DF_aft %>%
         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days")) %>%
+        mutate(subset = "last 7 days"),
+    DF_aft %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+        mutate(subset = "last 28 days")) %>%
     # filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = nap_end_time, colour = subset)) + geom_density()
 
@@ -97,7 +103,10 @@ rbind(
         mutate(subset = "all"),
     DF_aft %>%
         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days")) %>%
+        mutate(subset = "last 7 days"),
+    DF_aft %>%
+        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+        mutate(subset = "last 28 days")) %>%
     filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = nap_length, colour = subset)) + geom_density()
 
@@ -185,3 +194,53 @@ prob_nap <-
     mutate(prob = prob / max(prob))
 
 prob_nap %>% ggplot(aes(x = time, y = prob)) + geom_point(colour = "blue")
+
+get_prob_nap_start <- function(df_local, subset){
+    data.frame(time = seq(1,24*60) * 60 - 3660) %>%
+        mutate(time = Sys.Date() %>% as.POSIXct() + time) %>%
+        filter(time > min(df_local$nap_start_time - 10 * 60)) %>%
+        filter(time < max(df_local$nap_start_time + 10 * 60)) %>%
+        mutate(join_value = 1) %>%
+        full_join(df_local %>% select(Date, nap_start_time) %>% mutate(join_value = 1), 
+                  by = "join_value") %>% 
+        mutate(value = if_else(time >= nap_start_time, 1, 0)) %>%
+        group_by(time) %>% 
+        summarise(prob = sum(value)) %>% 
+        ungroup() %>%
+        mutate(prob = prob / max(prob)) %>%
+        mutate(subset = subset)
+}
+
+rbind(
+    get_prob_nap_start(
+        DF_aft, "All"),
+    get_prob_nap_start(
+        DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 7), "Last 7 days"),
+    get_prob_nap_start(
+        DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 28), "Last 28 days")) %>% 
+    ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
+
+get_prob_nap_end <- function(df_local, subset){
+    data.frame(time = seq(1,24*60) * 60 - 3660) %>%
+        mutate(time = Sys.Date() %>% as.POSIXct() + time) %>%
+        filter(time > min(df_local$nap_end_time - 10 * 60)) %>%
+        filter(time < max(df_local$nap_end_time + 10 * 60)) %>%
+        mutate(join_value = 1) %>%
+        full_join(df_local %>% select(Date, nap_end_time) %>% mutate(join_value = 1), 
+                  by = "join_value") %>% 
+        mutate(value = if_else(time >= nap_end_time, 1, 0)) %>%
+        group_by(time) %>% 
+        summarise(prob = sum(value)) %>% 
+        ungroup() %>%
+        mutate(prob = prob / max(prob)) %>%
+        mutate(subset = subset)
+}
+
+rbind(
+    get_prob_nap_end(
+        DF_aft, "All"),
+    get_prob_nap_end(
+        DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 7), "Last 7 days"),
+    get_prob_nap_end(
+        DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 28), "Last 28 days")) %>% 
+    ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()

@@ -69,32 +69,21 @@ DF_24h_summary %>%
 
 ##### Recent/All comparison graphs #####
 
-rbind(
-    DF_24h_summary %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days"),
-    DF_24h_summary %>%
-        mutate(subset = "all")) %>%
-    filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
-    ggplot(aes(x = sleep_24h, colour = subset)) + geom_density()
+# rbind(
+#     DF_24h_summary %>%
+#         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+#         mutate(subset = "last 7 days"),
+#     DF_24h_summary %>%
+#         mutate(subset = "all")) %>%
+#     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
+#     ggplot(aes(x = sleep_24h, colour = subset)) + geom_density()
 
-rbind(
-    DF_24h_summary %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days"),
-    DF_24h_summary %>%
-        mutate(subset = "all")) %>%
-    filter(difftime(Date, min(Date), units = "days") >= 1) %>%
-    ggplot(aes(x = subset , y = sleep_24h, fill = subset)) + geom_boxplot()
+# rbind(
+#     DF_24h_summary %>%
+#         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+#         mutate(subset = "last 7 days"),
+#     DF_24h_summary %>%
+#         mutate(subset = "all")) %>%
+#     filter(difftime(Date, min(Date), units = "days") >= 1) %>%
+#     ggplot(aes(x = subset , y = sleep_24h, fill = subset)) + geom_boxplot()
 
-rbind(
-    DF_24h_summary %>%
-        filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
-        mutate(subset = "all"),
-    DF_24h_summary %>%
-        filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days")) %>%
-    filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
-    ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
-    geom_point() + geom_smooth(method = "lm")
