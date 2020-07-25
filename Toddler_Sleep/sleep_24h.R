@@ -1,6 +1,6 @@
 source("init.R")
 
-##### Generate all date/times of interest #####
+#### Generate all date/times of interest ####
 
 all_dates <- 
     rbind(DF_raw$Start, DF_raw$End, DF_raw$Start2, DF_raw$End2, Sys.time()) %>% 
@@ -12,7 +12,7 @@ all_dates <-
     c(seq(min(as.Date(DF_raw$Start)), max(as.Date(DF_raw$Start)) + 1, 1) %>% 
           as.POSIXct() + 16*60*60)
 
-##### Create DF_24h_flat #####
+#### Create DF_24h_flat ####
 
 DF_24h_flat <- 
     expand.grid(all_dates, DF_raw$ID) 
@@ -35,14 +35,14 @@ DF_24h_flat <-
 # DF_24h_flat %>% arrange(Date) %>% 
 #     ggplot(aes(x = Date, y = value, colour = as.factor(ID))) + geom_line()
 
-##### Create DF_24h_summary #####
+#### Create DF_24h_summary ####
 
 DF_24h_summary <- 
     DF_24h_flat %>% 
     group_by(Date) %>% 
     summarise(sleep_24h = sum(value)) 
 
-##### DF_24h_summary Graph #####
+#### DF_24h_summary Graph ####
 
 DF_24h_summary %>% 
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
@@ -50,7 +50,14 @@ DF_24h_summary %>%
     ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
 # DF_raw %>% geom_rect(aes(xmin = Start, xmax = End, ymin = 9, ymax = 12))
 
-##### 11AM and 5PM graphs #####
+DF_24h_summary %>% 
+    filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>%
+    arrange(Date) %>% 
+    ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
+
+
+#### 11AM and 5PM graphs (deprecated) ####
 
 # DF_24h_summary %>% 
 #     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
@@ -67,7 +74,7 @@ DF_24h_summary %>%
 #     filter(Date %>% strftime(format ="%H:%M:%S") %in% c("11:00:00", "17:00:00")) %>%
 #     ggplot(aes(x = sleep_24h)) + geom_density(colour = "blue")
 
-##### Recent/All comparison graphs #####
+##### Recent/All comparison graphs (deprecated) #####
 
 # rbind(
 #     DF_24h_summary %>%
