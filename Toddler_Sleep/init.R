@@ -35,7 +35,7 @@ DF_aft <-
 
 # removing anomalies (days she didn't nap)
 DF_aft <- 
-    DF_aft %>% filter(Date != '2020-06-17') %>% filter(Date != '2020-06-17') 
+    DF_aft %>% filter(Date != '2020-06-17') %>% filter(Date != '2020-07-25') 
 
 #### Create DF_night ####
 
