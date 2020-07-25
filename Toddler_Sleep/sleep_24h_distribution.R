@@ -1,3 +1,5 @@
+#### Create sleep24h_distribution_flat and sleep24h_distribution_summary_all ####
+
 source("sleep_24h.R")
 
 min_sleep <- 
@@ -42,15 +44,12 @@ sleep24h_distribution_summary_all <-
     mutate(num_minutes = num_minutes/sum(num_minutes)) %>%
     mutate(subset = "all")
 
-sleep24h_distribution_summary_all %>%
-    ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + geom_density(colour = "Blue")
+# sleep24h_distribution_summary_all %>%
+#     ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + geom_density(colour = "Blue")
 
-
-sleep24h_distribution_summary_all %>%   
-    ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + 
-    geom_histogram(fill = "Blue")
-
-
+# sleep24h_distribution_summary_all %>%   
+#     ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + 
+#     geom_histogram(fill = "Blue")
 
 
 # sleep24h_distribution_flat %>% 
@@ -64,6 +63,7 @@ sleep24h_distribution_summary_all %>%
 #     ggplot(aes(x = sleep_24h_value, weight = num_minutes)) + geom_density(colour = "Blue") +
 #     ggtitle("past 3 days")
 
+#### Create 7 and 28 days subsets 
 
 sleep24h_distribution_summary_last7 <- 
     sleep24h_distribution_flat %>% 
@@ -88,6 +88,7 @@ sleep24h_distribution_summary_last28 <-
     mutate(num_minutes = num_minutes/sum(num_minutes)) %>%
     mutate(subset = "last 28 days")
 
+#### sleep_24h distribution graphs ####
 
 rbind(sleep24h_distribution_summary_all, 
       sleep24h_distribution_summary_last7, 

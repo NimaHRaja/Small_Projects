@@ -40,12 +40,12 @@ rbind(
     mutate(subset = "all"),
   DF_24h_summary %>%
     filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
+    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+    mutate(subset = "last 28 days"),
   DF_24h_summary %>%
     filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+    mutate(subset = "last 7 days")) %>%
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
   geom_point() + geom_smooth(method = "lm")
@@ -76,15 +76,14 @@ source("sleep_24h_distribution.R")
 rbind(sleep24h_distribution_summary_all, 
       sleep24h_distribution_summary_last7, 
       sleep24h_distribution_summary_last28) %>%
-    ggplot(aes(x = sleep_24h_value, weight = num_minutes, group = subset, colour = subset)) + 
-    geom_density()
-
+  ggplot(aes(x = sleep_24h_value, weight = num_minutes, group = subset, colour = subset)) + 
+  geom_density()
 
 rbind(sleep24h_distribution_summary_all, 
       sleep24h_distribution_summary_last7, 
       sleep24h_distribution_summary_last28) %>%
-    ggplot(aes(x = subset, y = sleep_24h_value, weight = num_minutes, fill = subset)) + 
-    geom_boxplot(outlier.alpha = 0)
+  ggplot(aes(x = subset, y = sleep_24h_value, weight = num_minutes, fill = subset)) + 
+  geom_boxplot(outlier.alpha = 0)
 ```
 
 # nap
