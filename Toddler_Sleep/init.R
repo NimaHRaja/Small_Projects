@@ -6,6 +6,7 @@ library(ggplot2)
 library(reshape2)
 
 no_nap_days <- 2
+no_night_days <- 0
 
 #### Read and Clean ####
 
