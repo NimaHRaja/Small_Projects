@@ -33,5 +33,14 @@ rbind(
     DF_aft %>% 
         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
         as.data.frame() %>% select(nap_start_time,nap_end_time) %>% melt() %>%
-        mutate(subset = "last 7 days")) %>%
+        mutate(subset = "last 7 days")#,
+    # DF_night %>%  
+    #     filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+    #     as.data.frame() %>% select(night_start_time,night_end_time) %>% melt() %>%
+    #     mutate(subset = "last 28 days"),
+    # DF_aft %>% 
+    #     filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+    #     as.data.frame() %>% select(nap_start_time,nap_end_time) %>% melt() %>%
+    #     mutate(subset = "last 28 days")
+    ) %>%
     ggplot(aes(x = variable , y = value, fill = subset)) + geom_boxplot()
