@@ -6,6 +6,7 @@ output:
   html_document: 
     fig_height: 6
     fig_width: 10
+    keep_md: yes
     toc: yes
 ---
 
@@ -84,6 +85,16 @@ rbind(sleep24h_distribution_summary_all,
       sleep24h_distribution_summary_last28) %>%
   ggplot(aes(x = subset, y = sleep_24h_value, weight = num_minutes, fill = subset)) + 
   geom_boxplot(outlier.alpha = 0)
+
+rbind(sleep24h_distribution_summary_all, 
+      sleep24h_distribution_summary_last7, 
+      sleep24h_distribution_summary_last28) %>%
+  arrange(sleep_24h_value) %>%
+  group_by(subset) %>%
+  mutate(num_minutes_cdf = cumsum(num_minutes)) %>%
+  ungroup() %>%
+  ggplot(aes(x = sleep_24h_value, y = num_minutes_cdf, colour = subset)) + 
+  geom_line()
 ```
 
 # nap
@@ -298,6 +309,18 @@ DF_night %>%
   inner_join(DF_24h_summary, by = "Date") %>%
   filter(sleep_24h > 6) %>%
   ggplot(aes(x = sleep_24h, y= night_start_time, label = day_month)) + 
+  geom_point(colour = "green") +
+  geom_text(colour = "red") +
+  geom_smooth(method = "lm")
+
+inner_join(
+  DF_night %>% mutate(Date = as.Date(Start)),
+  DF_24h_summary %>% 
+    filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
+    filter(sleep_24h > 6) %>%
+    mutate(Date = as.Date(Date)),
+  by = "Date") %>%
+  ggplot(aes(x = sleep_24h, y =night_start_time , label = day_month)) + 
   geom_point(colour = "green") +
   geom_text(colour = "red") +
   geom_smooth(method = "lm")
