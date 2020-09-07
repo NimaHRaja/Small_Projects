@@ -2,8 +2,8 @@ source("init.R")
 
 #### nap_end ####
 
-inner_join(DF_aft, DF_night, "Date") %>% 
-    ggplot(aes(x = nap_end_time, y = night_start_time)) + geom_point(colour = "blue")
+# inner_join(DF_aft, DF_night, "Date") %>% 
+#     ggplot(aes(x = nap_end_time, y = night_start_time)) + geom_point(colour = "blue")
 
 # inner_join(DF_aft, DF_night, "Date") %>% 
 #     filter(as.POSIXct(Start.y) > as.POSIXct(End.x)) %>% 
@@ -17,9 +17,9 @@ inner_join(DF_aft, DF_night, c("Date", "day_month")) %>%
 
 #### nap_length ####
 
-inner_join(DF_aft, DF_night, "Date") %>%
-    # mutate(nap_length = difftime(as.POSIXct(End.x), as.POSIXct(Start.x), "minutes") %>% as.numeric()) %>% 
-    ggplot(aes(x = nap_length, y = night_start_time)) + geom_point(colour = "blue")
+# inner_join(DF_aft, DF_night, "Date") %>%
+#     # mutate(nap_length = difftime(as.POSIXct(End.x), as.POSIXct(Start.x), "minutes") %>% as.numeric()) %>% 
+#     ggplot(aes(x = nap_length, y = night_start_time)) + geom_point(colour = "blue")
 
 
 # inner_join(DF_aft, DF_night, "Date") %>%
@@ -49,6 +49,38 @@ DF_night %>%
     geom_point(colour = "green") +
     geom_text(colour = "red") +
     geom_smooth(method = "lm")
+
+
+inner_join(
+    DF_night %>% mutate(Date = as.Date(Start)),
+    DF_24h_summary %>% 
+        filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
+        filter(sleep_24h > 6) %>%
+        mutate(Date = as.Date(Date)),
+    by = "Date") %>%
+    ggplot(aes(x = sleep_24h, y =night_start_time , label = day_month)) + 
+    geom_point(colour = "green") +
+    geom_text(colour = "red") +
+    geom_smooth(method = "lm")
+
+
+inner_join(
+    DF_night %>% mutate(Date = as.Date(Start)),
+    DF_24h_summary %>% 
+        filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
+        filter(sleep_24h > 6) %>%
+        mutate(Date = as.Date(Date)),
+    by = "Date")  %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 8) %>% 
+    ggplot(aes(x = sleep_24h, y =night_start_time , label = day_month)) + 
+    geom_point(colour = "green") +
+    geom_text(colour = "red") +
+    geom_smooth(method = "lm")
+
+
+
+
+
 
 ##############
 # 
