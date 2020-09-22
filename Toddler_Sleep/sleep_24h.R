@@ -26,11 +26,11 @@ DF_24h_flat <-
 DF_24h_flat <- 
     DF_24h_flat %>% mutate(value = 
                                ifelse(Date >= End & Date <= Start2, 
-                                      difftime(End, Start, units = "hours"), 
+                                      difftime(End, Start, units = "mins"), 
                                       ifelse(Date >= Start & Date <= End, 
-                                             difftime(Date, Start, units = "hours"),
+                                             difftime(Date, Start, units = "mins"),
                                              ifelse(Date >= Start2 & Date <= End2, 
-                                                    difftime(End2, Date, units = "hours"),0)))) 
+                                                    difftime(End2, Date, units = "mins"),0)))) 
 
 # DF_24h_flat %>% arrange(Date) %>% 
 #     ggplot(aes(x = Date, y = value, colour = as.factor(ID))) + geom_line()
@@ -45,12 +45,14 @@ DF_24h_summary <-
 #### DF_24h_summary Graph ####
 
 DF_24h_summary %>% 
+    mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     arrange(Date) %>% 
     ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
 # DF_raw %>% geom_rect(aes(xmin = Start, xmax = End, ymin = 9, ymax = 12))
 
 DF_24h_summary %>% 
+    mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     filter(difftime(Sys.time(), Date, units = "days") <= 7) %>%
     arrange(Date) %>% 

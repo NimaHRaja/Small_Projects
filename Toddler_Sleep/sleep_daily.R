@@ -22,6 +22,7 @@ rbind(
         filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
         mutate(subset = "last 7 days")) %>%
+    mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
     geom_point() + geom_smooth(method = "lm")

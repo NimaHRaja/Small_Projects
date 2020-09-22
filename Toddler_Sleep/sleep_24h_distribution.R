@@ -4,7 +4,7 @@ source("sleep_24h.R")
 
 min_sleep <- 
   DF_24h_summary %>% 
-  mutate(sleep_24h = 60 * sleep_24h) %>%
+  # mutate(sleep_24h = 60 * sleep_24h) %>%
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   summarise(min(sleep_24h)) %>%
   as.numeric() - 10
@@ -12,7 +12,7 @@ min_sleep <-
 
 max_sleep <- 
   DF_24h_summary %>% 
-  mutate(sleep_24h = 60 * sleep_24h) %>%
+  # mutate(sleep_24h = 60 * sleep_24h) %>%
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   summarise(max(sleep_24h)) %>%
   as.numeric() + 10
@@ -20,7 +20,7 @@ max_sleep <-
 
 sleep24h_distribution_flat <-
   DF_24h_summary %>% 
-  mutate(sleep_24h = 60 * sleep_24h) %>% 
+  # mutate(sleep_24h = 60 * sleep_24h) %>% 
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   mutate(date_before = lag(Date,1), sleep24h_before = lag(sleep_24h, 1)) %>%
   filter(!is.na(date_before)) %>% 
@@ -103,10 +103,10 @@ rbind(sleep24h_distribution_summary_all,
   ggplot(aes(x = subset, y = sleep_24h_value, weight = num_minutes, fill = subset)) + 
   geom_boxplot(outlier.alpha = 0)
 
-rbind(sleep24h_distribution_summary_all, 
-      sleep24h_distribution_summary_last7, 
-      sleep24h_distribution_summary_last28) %>%
-  ggplot(aes(x = sleep_24h_value)) +  stat_ecdf()
+# rbind(sleep24h_distribution_summary_all, 
+#       sleep24h_distribution_summary_last7, 
+#       sleep24h_distribution_summary_last28) %>%
+#   ggplot(aes(x = sleep_24h_value)) +  stat_ecdf()
 
 rbind(sleep24h_distribution_summary_all, 
       sleep24h_distribution_summary_last7, 

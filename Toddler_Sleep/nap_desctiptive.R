@@ -209,7 +209,8 @@ get_prob_nap_start <- function(df_local, subset){
         group_by(time) %>% 
         summarise(num_days = sum(value)) %>% 
         ungroup() %>%
-        mutate(prob = num_days / (max(num_days) + no_nap_days)) %>%
+        # mutate(prob = num_days / (max(num_days) + no_nap_days)) %>%
+        mutate(prob = num_days / max(num_days)) %>%
         mutate(subset = subset)
 }
 
@@ -234,7 +235,8 @@ get_prob_nap_end <- function(df_local, subset){
         group_by(time) %>% 
         summarise(num_days = sum(value)) %>% 
         ungroup() %>%
-        mutate(prob = num_days / (max(num_days) + no_nap_days)) %>%
+        # mutate(prob = num_days / (max(num_days) + no_nap_days)) %>%
+        mutate(prob = num_days / max(num_days)) %>%
         mutate(subset = subset)
 }
 

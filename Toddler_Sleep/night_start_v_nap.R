@@ -44,6 +44,7 @@ DF_night %>%
     # filter(Date != Sys.Date()) %>%
     mutate(Date = Start) %>% 
     inner_join(DF_24h_summary, by = "Date") %>%
+    mutate(sleep_24h = sleep_24h / 60) %>%
     filter(sleep_24h > 6) %>%
     ggplot(aes(x = sleep_24h, y= night_start_time, label = day_month)) + 
     geom_point(colour = "green") +
@@ -54,6 +55,7 @@ DF_night %>%
 inner_join(
     DF_night %>% mutate(Date = as.Date(Start)),
     DF_24h_summary %>% 
+        mutate(sleep_24h = sleep_24h / 60) %>%
         filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
         filter(sleep_24h > 6) %>%
         mutate(Date = as.Date(Date)),
@@ -67,6 +69,7 @@ inner_join(
 inner_join(
     DF_night %>% mutate(Date = as.Date(Start)),
     DF_24h_summary %>% 
+        mutate(sleep_24h = sleep_24h / 60) %>%
         filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
         filter(sleep_24h > 6) %>%
         mutate(Date = as.Date(Date)),
