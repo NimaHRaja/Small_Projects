@@ -47,6 +47,7 @@ rbind(
     filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
     filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
     mutate(subset = "last 7 days")) %>%
+  mutate(sleep_24h = sleep_24h / 60) %>%
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
   geom_point() + geom_smooth(method = "lm")
@@ -58,11 +59,13 @@ rbind(
 source("sleep_24h.R")
 
 DF_24h_summary %>% 
+  mutate(sleep_24h = sleep_24h / 60) %>%
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   arrange(Date) %>% 
   ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
 
 DF_24h_summary %>% 
+  mutate(sleep_24h = sleep_24h / 60) %>%
   filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
   filter(difftime(Sys.time(), Date, units = "days") <= 7) %>%
   arrange(Date) %>% 
@@ -307,6 +310,7 @@ DF_night %>%
   # filter(Date != Sys.Date()) %>%
   mutate(Date = Start) %>% 
   inner_join(DF_24h_summary, by = "Date") %>%
+  mutate(sleep_24h = sleep_24h / 60) %>%
   filter(sleep_24h > 6) %>%
   ggplot(aes(x = sleep_24h, y= night_start_time, label = day_month)) + 
   geom_point(colour = "green") +
@@ -316,6 +320,7 @@ DF_night %>%
 inner_join(
   DF_night %>% mutate(Date = as.Date(Start)),
   DF_24h_summary %>% 
+    mutate(sleep_24h = sleep_24h / 60) %>%
     filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
     filter(sleep_24h > 6) %>%
     mutate(Date = as.Date(Date)),
@@ -328,6 +333,7 @@ inner_join(
 inner_join(
   DF_night %>% mutate(Date = as.Date(Start)),
   DF_24h_summary %>% 
+    mutate(sleep_24h = sleep_24h / 60) %>%
     filter(Date %>% strftime(format ="%H:%M:%S") == "17:00:00") %>% 
     filter(sleep_24h > 6) %>%
     mutate(Date = as.Date(Date)),
@@ -337,4 +343,44 @@ inner_join(
   geom_point(colour = "green") +
   geom_text(colour = "red") +
   geom_smooth(method = "lm")
+```
+
+# NightWeaning_temp
+
+```{r NightWeaning_temp}
+options(stringsAsFactors = FALSE)
+library(dplyr)
+library(ggplot2)
+
+DF <- read.csv("NightWeaning_Log.csv")
+
+DF <- DF %>% 
+  mutate(Start = as.POSIXct(Start, tz = "GMT")) %>%
+  mutate(End = as.POSIXct(End, tz = "GMT")) %>% 
+  arrange(Start) %>%
+  mutate(Date = as.Date(Start) - if_else(Start %>% format("%H") < 12,1,0)) %>%
+  mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric())
+
+DF %>% mutate(test = lag(End, 1))%>% filter(Start != test & note != "Start_Sleep") %>% dim()
+
+DF %>% arrange(desc(Start)) %>%
+  ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
+  geom_col( position = position_stack(reverse = TRUE))
+
+DF <- 
+  DF %>% rbind(
+    DF %>% filter(note == "Start_Sleep") %>% group_by(Date) %>% summarise(End = min(Start)) %>% 
+      ungroup() %>% mutate(Start = as.POSIXct(Date) + 20*60*60) %>% 
+      mutate(Description = "Awake") %>% mutate(note = "") %>% 
+      mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric()) %>%
+      select("Start","End","Description","note","Date","duration"),
+    DF %>% group_by(Date) %>% summarise(Start = max(End)) %>% 
+      ungroup() %>% mutate(End = as.POSIXct(Date) + (24+9)*60*60) %>% 
+      mutate(Description = "Awake") %>% mutate(note = "") %>% 
+      mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric()) %>%
+      select("Start","End","Description","note","Date","duration"))
+
+DF %>% arrange(desc(Start)) %>%
+  ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
+  geom_col( position = position_stack(reverse = TRUE))
 ```
