@@ -1,6 +1,7 @@
 options(stringsAsFactors = FALSE)
 library(dplyr)
 library(ggplot2)
+library(reshape2)
 
 DF <- read.csv("NightWeaning_Log.csv")
 
@@ -20,7 +21,7 @@ DF %>% arrange(desc(Start)) %>%
 
 
 
-DF <- 
+DF2 <- 
     DF %>% rbind(
         DF %>% filter(note == "Start_Sleep") %>% group_by(Date) %>% summarise(End = min(Start)) %>% 
             ungroup() %>% mutate(Start = as.POSIXct(Date) + 20*60*60) %>% 
@@ -34,10 +35,62 @@ DF <-
             select("Start","End","Description","note","Date","duration"))
 
 
-DF %>% arrange(desc(Start)) %>%
+DF2 %>% arrange(desc(Start)) %>%
     ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
     geom_col( position = position_stack(reverse = TRUE))
 
+
+DF %>% group_by(Date, Description) %>% #, .drop = FALSE) %>% 
+    summarise(num_sup = n()) %>% 
+    dcast(Date ~ Description, value.var = "num_sup") %>% 
+    mutate(num_Supervision = if_else(condition = is.na(Supervision),0,as.numeric(Supervision))) %>%
+    ggplot(aes(x = Date, y = num_Supervision)) + geom_bar(fill = "blue", stat = "identity")
+
+
+DF %>% group_by(Date, Description) %>%
+    summarise(len_sup = sum(duration)) %>% 
+    dcast(Date ~ Description, value.var = "len_sup") %>%
+    mutate(time_supervision = if_else(condition = is.na(Supervision),0,as.numeric(Supervision))) %>%
+    ggplot(aes(x = Date, y = time_supervision)) + geom_point(colour = "blue")
+
+DF %>% 
+    filter(Description == "Sleep") %>% 
+    group_by(Date) %>% 
+    summarise(max_uninterupted = max(duration)) %>%
+    ggplot(aes(x = Date, y = max_uninterupted)) + 
+    geom_point(colour = "blue") + ylim(c(0,12))
+
+DF %>% 
+    filter(Description == "Sleep") %>% 
+    group_by(Date) %>% 
+    summarise(max_uninterupted = max(duration)) %>%
+    ggplot(aes(x = max_uninterupted)) +
+    geom_histogram(binwidth = 0.5, fill = "blue")
+
+
+DF %>% 
+    group_by(Date, Description) %>%
+    summarise(tot_time = sum(duration)) %>%
+    ungroup() %>%
+    mutate(tot_time = if_else(Description == "Sleep", tot_time, -tot_time)) %>%
+    ggplot(aes(x = Date, y = tot_time, fill = Description)) + geom_bar(stat = "identity")
+
+
+inner_join(
+    DF2 %>% mutate(join_value = 1),
+    data.frame(time = (seq(0:(60*13))*60 - 5*60*60 - 60), join_value = 1),
+    by = "join_value") %>% 
+    mutate(time2 = time + 24*60*60 + as.POSIXct(Date)) %>% 
+    mutate(difftime(time2, Start)) %>%
+    filter(time2 >= (Start - 3600) & time2 < (End - 3600)) %>%
+    group_by(time, Description) %>%
+    summarise(count = n()) %>%
+    ungroup() %>%
+    dcast(time ~ Description, value.var = "count") %>%
+    replace(is.na(.), 0) %>%
+    mutate(prob_supervision = Supervision/(Supervision + Sleep + Awake)) %>%
+    mutate(time = as.POSIXct(Sys.Date()) + time) %>% 
+    ggplot(aes(x = time, y = prob_supervision)) + geom_line(colour = "blue")
 
 
 # library(ggplot2); library(scales)
