@@ -25,26 +25,19 @@ source("init.R")
 ```{r daily_sleep}
 source("sleep_daily.R")
 
-full_join(
-  DF_night %>% select(night_length, Date),
-  DF_aft %>% select(nap_length, Date), 
-  by = "Date") %>% 
-  melt(id.vars = "Date") %>% 
-  filter(!is.na(value)) %>%
-  # mutate(sleep = factor(variable, levels = c("nap_length", "night_length"))) %>%
-  ggplot(aes(x = Date, y = value, fill = variable)) + 
-  geom_bar(stat = "identity", position = "stack")
+print(sleep_daily_p1)
+
 
 rbind(
   DF_24h_summary %>%
-    filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
+    filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
     mutate(subset = "all"),
   DF_24h_summary %>%
-    filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
+    filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
     filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
     mutate(subset = "last 28 days"),
   DF_24h_summary %>%
-    filter(Date %>% strftime(format ="%H:%M:%S") == "11:00:00") %>%
+    filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
     filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
     mutate(subset = "last 7 days")) %>%
   mutate(sleep_24h = sleep_24h / 60) %>%
@@ -348,81 +341,19 @@ inner_join(
 # NightWeaning_temp
 
 ```{r NightWeaning_temp}
-options(stringsAsFactors = FALSE)
-library(dplyr)
-library(ggplot2)
-library(reshape2)
+source("NightWeaning_temp.R")
 
-DF <- read.csv("NightWeaning_Log.csv")
+print(NightWeaning_test1)
 
-DF <- DF %>% 
-  mutate(Start = as.POSIXct(Start, tz = "GMT")) %>%
-  mutate(End = as.POSIXct(End, tz = "GMT")) %>% 
-  arrange(Start) %>%
-  mutate(Date = as.Date(Start) - if_else(Start %>% format("%H") < 12,1,0)) %>%
-  mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric())
+print(NightWeaning_p1)
+print(NightWeaning_p2)
+print(NightWeaning_p3)
+print(NightWeaning_p4)
+print(NightWeaning_p5)
+print(NightWeaning_p6)
+print(NightWeaning_p7)
+print(NightWeaning_p8)
 
-DF %>% mutate(test = lag(End, 1))%>% filter(Start != test & note != "Start_Sleep") %>% dim()
-
-
-DF %>% arrange(desc(Start)) %>%
-  ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
-  geom_col( position = position_stack(reverse = TRUE))
-
-
-
-DF2 <- 
-  DF %>% rbind(
-    DF %>% filter(note == "Start_Sleep") %>% group_by(Date) %>% summarise(End = min(Start)) %>% 
-      ungroup() %>% mutate(Start = as.POSIXct(Date) + 20*60*60) %>% 
-      mutate(Description = "Awake") %>% mutate(note = "") %>% 
-      mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric()) %>%
-      select("Start","End","Description","note","Date","duration"),
-    DF %>% group_by(Date) %>% summarise(Start = max(End)) %>% 
-      ungroup() %>% mutate(End = as.POSIXct(Date) + (24+9)*60*60) %>% 
-      mutate(Description = "Awake") %>% mutate(note = "") %>% 
-      mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric()) %>%
-      select("Start","End","Description","note","Date","duration"))
-
-
-DF2 %>% arrange(desc(Start)) %>%
-  ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
-  geom_col( position = position_stack(reverse = TRUE))
-
-
-DF %>% group_by(Date, Description) %>% #, .drop = FALSE) %>% 
-  summarise(num_sup = n()) %>% 
-  dcast(Date ~ Description, value.var = "num_sup") %>% 
-  mutate(num_Supervision = if_else(condition = is.na(Supervision),0,as.numeric(Supervision))) %>%
-  ggplot(aes(x = Date, y = num_Supervision)) + geom_bar(fill = "blue", stat = "identity")
-
-
-DF %>% group_by(Date, Description) %>%
-  summarise(len_sup = sum(duration)) %>% 
-  dcast(Date ~ Description, value.var = "len_sup") %>%
-  mutate(time_supervision = if_else(condition = is.na(Supervision),0,as.numeric(Supervision))) %>%
-  ggplot(aes(x = Date, y = time_supervision)) + geom_point(colour = "blue")
-
-DF %>% 
-  filter(Description == "Sleep") %>% 
-  group_by(Date) %>% 
-  summarise(max_uninterupted = max(duration)) %>%
-  ggplot(aes(x = Date, y = max_uninterupted)) + 
-  geom_point(colour = "blue") + ylim(c(0,12))
-
-DF %>% 
-  filter(Description == "Sleep") %>% 
-  group_by(Date) %>% 
-  summarise(max_uninterupted = max(duration)) %>%
-  ggplot(aes(x = max_uninterupted)) +
-  geom_histogram(binwidth = 0.5, fill = "blue")
-
-DF %>% 
-  group_by(Date, Description) %>%
-  summarise(tot_time = sum(duration)) %>%
-  ungroup() %>%
-  mutate(tot_time = if_else(Description == "Sleep", tot_time, -tot_time)) %>%
-  ggplot(aes(x = Date, y = tot_time, fill = Description)) + geom_bar(stat = "identity")
 
 inner_join(
   DF2 %>% mutate(join_value = 1),

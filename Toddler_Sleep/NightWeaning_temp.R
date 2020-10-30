@@ -1,25 +1,19 @@
-options(stringsAsFactors = FALSE)
-library(dplyr)
-library(ggplot2)
-library(reshape2)
+source("init.R")
 
-DF <- read.csv("NightWeaning_Log.csv")
-
-DF <- DF %>% 
+DF <- read.csv("NightWeaning_Log.csv") %>% 
     mutate(Start = as.POSIXct(Start, tz = "GMT")) %>%
     mutate(End = as.POSIXct(End, tz = "GMT")) %>% 
     arrange(Start) %>%
     mutate(Date = as.Date(Start) - if_else(Start %>% format("%H") < 12,1,0)) %>%
     mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric())
 
-DF %>% mutate(test = lag(End, 1))%>% filter(Start != test & note != "Start_Sleep") %>% dim()
+NightWeaning_test1 <- 
+    DF %>% mutate(test = lag(End, 1))%>% filter(Start != test & note != "Start_Sleep") %>% dim()
 
-
-DF %>% arrange(desc(Start)) %>%
+NightWeaning_p1 <- 
+    DF %>% arrange(desc(Start)) %>%
     ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
     geom_col( position = position_stack(reverse = TRUE))
-
-
 
 DF2 <- 
     DF %>% rbind(
@@ -34,61 +28,71 @@ DF2 <-
             mutate(duration = difftime(End, Start, units = "hours") %>% as.numeric()) %>%
             select("Start","End","Description","note","Date","duration"))
 
-
-DF2 %>% arrange(desc(Start)) %>%
+NightWeaning_p2 <-
+    DF2 %>% arrange(desc(Start)) %>%
     ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
     geom_col( position = position_stack(reverse = TRUE))
 
-
-DF %>% group_by(Date, Description) %>% #, .drop = FALSE) %>% 
+NightWeaning_p3 <-
+    DF %>% group_by(Date, Description) %>% #, .drop = FALSE) %>% 
     summarise(num_sup = n()) %>% 
     dcast(Date ~ Description, value.var = "num_sup") %>% 
     mutate(num_Supervision = if_else(condition = is.na(Supervision),0,as.numeric(Supervision))) %>%
     ggplot(aes(x = Date, y = num_Supervision)) + geom_bar(fill = "blue", stat = "identity")
 
-
-DF %>% group_by(Date, Description) %>%
+NightWeaning_p4 <-
+    DF %>% group_by(Date, Description) %>%
     summarise(len_sup = sum(duration)) %>% 
     dcast(Date ~ Description, value.var = "len_sup") %>%
     mutate(time_supervision = if_else(condition = is.na(Supervision),0,as.numeric(Supervision))) %>%
     ggplot(aes(x = Date, y = time_supervision)) + geom_point(colour = "blue")
 
-DF %>% 
+NightWeaning_p5 <-
+    DF %>% 
     filter(Description == "Sleep") %>% 
     group_by(Date) %>% 
     summarise(max_uninterupted = max(duration)) %>%
     ggplot(aes(x = Date, y = max_uninterupted)) + 
     geom_point(colour = "blue") + ylim(c(0,12))
 
-DF %>% 
+NightWeaning_p6 <-
+    DF %>% 
     filter(Description == "Sleep") %>% 
     group_by(Date) %>% 
     summarise(max_uninterupted = max(duration)) %>%
     ggplot(aes(x = max_uninterupted)) +
     geom_histogram(binwidth = 0.5, fill = "blue")
 
-
-DF %>% 
+NightWeaning_p7 <- 
+    DF %>% 
     group_by(Date, Description) %>%
     summarise(tot_time = sum(duration)) %>%
     ungroup() %>%
     mutate(tot_time = if_else(Description == "Sleep", tot_time, -tot_time)) %>%
     ggplot(aes(x = Date, y = tot_time, fill = Description)) + geom_bar(stat = "identity")
 
+NightWeaning_p8 <- 
+    DF %>% 
+    group_by(Date, Description) %>%
+    summarise(tot_time = sum(duration)) %>%
+    ungroup() %>%
+    mutate(tot_time = if_else(Description == "Supervision", -tot_time, tot_time)) %>%
+    ggplot(aes(x = Date, y = tot_time, fill = Description)) + geom_bar(stat = "identity")
 
 inner_join(
     DF2 %>% mutate(join_value = 1),
     data.frame(time = (seq(0:(60*13))*60 - 5*60*60 - 60), join_value = 1),
-    by = "join_value") %>% 
+    by = "join_value") %>%
     mutate(time2 = time + 24*60*60 + as.POSIXct(Date)) %>% 
+    mutate(time2 = time2 + if_else(Date > as.Date('2020-10-24'), -60*60,0)) %>%
     mutate(difftime(time2, Start)) %>%
     filter(time2 >= (Start - 3600) & time2 < (End - 3600)) %>%
     group_by(time, Description) %>%
     summarise(count = n()) %>%
     ungroup() %>%
     dcast(time ~ Description, value.var = "count") %>%
-    replace(is.na(.), 0) %>%
-    mutate(prob_supervision = Supervision/(Supervision + Sleep + Awake)) %>%
+    replace(is.na(.), 0) %>% 
+    mutate(prob_supervision = Supervision/(Supervision + Sleep + Awake + Co_Sleep)) %>%
     mutate(time = as.POSIXct(Sys.Date()) + time) %>% 
     ggplot(aes(x = time, y = prob_supervision)) + geom_line(colour = "blue")
 

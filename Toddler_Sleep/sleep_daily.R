@@ -1,9 +1,10 @@
 source("sleep_24h.R")
 
-full_join(
-    DF_night %>% select(night_length, Date),
-    DF_aft %>% select(nap_length, Date), 
-    by = "Date") %>% 
+sleep_daily_p1 <- 
+    full_join(
+        DF_night %>% select(night_length, Date),
+        DF_aft %>% select(nap_length, Date), 
+        by = "Date") %>% 
     melt(id.vars = "Date") %>% 
     filter(!is.na(value)) %>%
     # mutate(sleep = factor(variable, levels = c("nap_length", "night_length"))) %>%
