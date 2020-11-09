@@ -26,24 +26,7 @@ source("init.R")
 source("sleep_daily.R")
 
 print(sleep_daily_p1)
-
-
-rbind(
-  DF_24h_summary %>%
-    filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
-    mutate(subset = "all"),
-  DF_24h_summary %>%
-    filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days"),
-  DF_24h_summary %>%
-    filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days")) %>%
-  mutate(sleep_24h = sleep_24h / 60) %>%
-  filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
-  ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
-  geom_point() + geom_smooth(method = "lm")
+print(sleep_daily_p2)
 ```
 
 # 24h_rolling  
@@ -347,6 +330,8 @@ print(NightWeaning_test1)
 
 print(NightWeaning_p1)
 print(NightWeaning_p2)
+print(NightWeaning_p1p)
+print(NightWeaning_p2p)
 print(NightWeaning_p3)
 print(NightWeaning_p4)
 print(NightWeaning_p5)

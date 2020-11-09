@@ -11,18 +11,23 @@ sleep_daily_p1 <-
     ggplot(aes(x = Date, y = value, fill = variable)) + 
     geom_bar(stat = "identity", position = "stack")
 
-rbind(
-    DF_24h_summary %>%
-        filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
-        mutate(subset = "all"),
-    DF_24h_summary %>%
-        filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-        mutate(subset = "last 28 days"),
-    DF_24h_summary %>%
-        filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days")) %>%
+sleep_daily_p2 <- 
+    rbind(
+        DF_24h_summary %>%
+            filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
+            mutate(subset = "all"),
+        DF_24h_summary %>%
+            filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 90) %>% 
+            mutate(subset = "last 90 days"),
+        DF_24h_summary %>%
+            filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+            mutate(subset = "last 28 days"),
+        DF_24h_summary %>%
+            filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+            mutate(subset = "last 7 days")) %>%
     mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
