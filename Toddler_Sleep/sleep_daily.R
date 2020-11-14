@@ -9,9 +9,23 @@ sleep_daily_p1 <-
     filter(!is.na(value)) %>%
     # mutate(sleep = factor(variable, levels = c("nap_length", "night_length"))) %>%
     ggplot(aes(x = Date, y = value, fill = variable)) + 
-    geom_bar(stat = "identity", position = "stack")
+    geom_bar(stat = "identity", position = "stack") +
+    ylab("sleep (h)")
 
 sleep_daily_p2 <- 
+    full_join(
+        DF_night %>% select(night_length, Date),
+        DF_aft %>% select(nap_length, Date), 
+        by = "Date") %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 14) %>%
+    melt(id.vars = "Date") %>% 
+    filter(!is.na(value)) %>%
+    # mutate(sleep = factor(variable, levels = c("nap_length", "night_length"))) %>%
+    ggplot(aes(x = Date, y = value, fill = variable)) + 
+    geom_bar(stat = "identity", position = "stack") +
+    ylab("sleep (h)")
+
+sleep_daily_p3 <- 
     rbind(
         DF_24h_summary %>%
             filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%

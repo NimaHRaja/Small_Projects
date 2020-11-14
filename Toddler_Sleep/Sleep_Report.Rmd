@@ -27,6 +27,7 @@ source("sleep_daily.R")
 
 print(sleep_daily_p1)
 print(sleep_daily_p2)
+print(sleep_daily_p3)
 ```
 
 # 24h_rolling  
