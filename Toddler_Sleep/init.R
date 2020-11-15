@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 library(reshape2)
 
-no_nap_days <- 7
+no_nap_days <- 8
 no_night_days <- 0
 
 #### Read and Clean ####
@@ -43,7 +43,8 @@ DF_aft <-
     filter(Date != '2020-08-30') %>% 
     filter(Date != '2020-09-21') %>% 
     filter(Date != '2020-09-25') %>% 
-    filter(Date != '2020-10-23') 
+    filter(Date != '2020-10-23') %>% 
+    filter(Date != '2020-11-15') 
 
 #### Create DF_night ####
 
