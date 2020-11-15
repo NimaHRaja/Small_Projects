@@ -44,14 +44,24 @@ DF_24h_summary <-
 
 #### DF_24h_summary Graph ####
 
-DF_24h_summary %>% 
+rolling_24h_p1 <- 
+    DF_24h_summary %>% 
     mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     arrange(Date) %>% 
     ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
 # DF_raw %>% geom_rect(aes(xmin = Start, xmax = End, ymin = 9, ymax = 12))
 
-DF_24h_summary %>% 
+rolling_24h_p2 <- 
+    DF_24h_summary %>% 
+    mutate(sleep_24h = sleep_24h / 60) %>%
+    filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>%
+    arrange(Date) %>% 
+    ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
+
+rolling_24h_p3 <- 
+    DF_24h_summary %>% 
     mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     filter(difftime(Sys.time(), Date, units = "days") <= 7) %>%

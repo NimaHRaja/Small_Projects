@@ -35,18 +35,9 @@ print(sleep_daily_p3)
 ```{r 24h_rolling}
 source("sleep_24h.R")
 
-DF_24h_summary %>% 
-  mutate(sleep_24h = sleep_24h / 60) %>%
-  filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
-  arrange(Date) %>% 
-  ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
-
-DF_24h_summary %>% 
-  mutate(sleep_24h = sleep_24h / 60) %>%
-  filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
-  filter(difftime(Sys.time(), Date, units = "days") <= 7) %>%
-  arrange(Date) %>% 
-  ggplot(aes(x = Date, y = sleep_24h)) + geom_line(colour = "blue")
+print(rolling_24h_p1)
+print(rolling_24h_p2)
+print(rolling_24h_p3)
 ```
 
 # sleep_24h_distribution
