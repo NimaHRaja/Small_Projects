@@ -45,4 +45,5 @@ sleep_daily_p3 <-
     mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
-    geom_point() + geom_smooth(method = "lm")
+    geom_point() + geom_smooth(method = "lm", formula = 'y ~ x') +
+    ylab("sleep (h)")
