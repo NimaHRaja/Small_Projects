@@ -1,26 +1,26 @@
 ---
 title: "Sleep_Report"
-author: "Nima Hamedani-Raja"
-date: "25/06/2020"
+# author: "Nima Hamedani-Raja"
+# date: "25/06/2020"
 output: 
   html_document: 
     fig_height: 6
     fig_width: 10
     keep_md: yes
-    toc: yes
+    # toc: yes
 ---
 
-# INIT
+# {.tabset .tabset-fade .tabset-pills}
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r init}
+```{r init, warning=FALSE,eval=FALSE}
 source("init.R")
 ```
 
-# daily_sleep
+## daily_sleep {.tabset .tabset-fade .tabset-pills}
 
 ```{r daily_sleep}
 source("sleep_daily.R")
@@ -30,7 +30,9 @@ print(sleep_daily_p2)
 print(sleep_daily_p3)
 ```
 
-# 24h_rolling  
+## Rest {.tabset .tabset-fade .tabset-pills}
+
+### 24h_rolling {.tabset .tabset-fade .tabset-pills}
 
 ```{r 24h_rolling}
 source("sleep_24h.R")
@@ -40,7 +42,7 @@ print(rolling_24h_p2)
 print(rolling_24h_p3)
 ```
 
-# sleep_24h_distribution
+### sleep_24h_distribution {.tabset .tabset-fade .tabset-pills}
 
 ```{r sleep_24h_distribution}
 source("sleep_24h_distribution.R")
@@ -68,7 +70,7 @@ rbind(sleep24h_distribution_summary_all,
   geom_line()
 ```
 
-# nap
+### nap {.tabset .tabset-fade .tabset-pills}
 
 ```{r nap}
 source("nap_desctiptive.R")
@@ -150,7 +152,7 @@ rbind(
   ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
 ```
 
-# night
+### night {.tabset .tabset-fade .tabset-pills}
 
 ```{r night}
 source("night_descriptive.R")
@@ -238,7 +240,7 @@ rbind(
 
 ```
 
-# start_end_boxplots
+### start_end_boxplots {.tabset .tabset-fade .tabset-pills}
 
 ```{r start_end_boxplots}
 rbind(
@@ -259,7 +261,7 @@ rbind(
   ggplot(aes(x = variable , y = value, fill = subset)) + geom_boxplot()
 ```
 
-# night_start v.
+### night_start v. {.tabset .tabset-fade .tabset-pills}
 
 ```{r night_start_v}
 inner_join(DF_aft, DF_night, c("Date", "day_month")) %>%
@@ -313,7 +315,7 @@ inner_join(
   geom_smooth(method = "lm")
 ```
 
-# NightWeaning_temp
+### NightWeaning_temp {.tabset .tabset-fade .tabset-pills}
 
 ```{r NightWeaning_temp}
 source("NightWeaning_temp.R")
