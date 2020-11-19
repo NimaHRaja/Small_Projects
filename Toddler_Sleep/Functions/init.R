@@ -1,3 +1,7 @@
+### Finalised.
+### Init loads the libraries, reads the raw data, and prepares the necessary dataframes.
+
+
 #### Init ####
 
 options(stringsAsFactors = FALSE)
