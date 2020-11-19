@@ -1,4 +1,7 @@
-source("sleep_24h.R")
+### Finalised.
+### Generates graphs describing the time-series of sleep_daily
+
+source("Functions/sleep_24h.R")
 
 sleep_daily_p1 <- 
     full_join(
