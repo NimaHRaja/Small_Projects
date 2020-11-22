@@ -50,3 +50,35 @@ sleep_daily_p3 <-
     ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
     geom_point() + geom_smooth(method = "lm", formula = 'y ~ x') +
     ylab("sleep (h)")
+
+sleep_daily_p4 <- 
+    full_join(
+        DF_night %>% select(Date, night_length),
+        DF_aft %>% select(Date, nap_length), 
+        by = "Date") %>% 
+    mutate(nap_length = if_else(is.na(nap_length), 0, nap_length)) %>%
+    mutate(tot_sleep = night_length + nap_length) %>%
+    mutate(week_day = wday(Date, label = TRUE)) %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 28 &
+               difftime(Sys.time(), Date, units = "days") > 1) %>% 
+    select(-Date) %>%
+    melt(id.vars  = "week_day") %>% 
+    ggplot(aes(x = week_day, y = value, fill = variable)) + 
+    geom_boxplot() +
+    ylab("length (h)") +
+    ggtitle("last 28 days")
+
+sleep_daily_p5 <- 
+    full_join(
+        DF_night %>% select(Date, night_length),
+        DF_aft %>% select(Date, nap_length), 
+        by = "Date") %>% 
+    mutate(nap_length = if_else(is.na(nap_length), 0, nap_length)) %>%
+    mutate(tot_sleep = night_length + nap_length) %>%
+    mutate(week_day = wday(Date, label = TRUE)) %>%
+    filter(difftime(Sys.time(), Date, units = "days") <= 28 &
+               difftime(Sys.time(), Date, units = "days") > 1) %>% 
+    ggplot(aes(x = week_day, y = tot_sleep)) + 
+    geom_boxplot(fill = "lightgreen") +
+    ylab("length (h)") +
+    ggtitle("last 28 days")
