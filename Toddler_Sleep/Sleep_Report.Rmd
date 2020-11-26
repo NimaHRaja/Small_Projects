@@ -24,17 +24,26 @@ source("Functions/init.R")
 
 ### daily_sleep {.tabset .tabset-fade .tabset-pills}
 
+#### daily_sleep {.tabset .tabset-fade .tabset-pills}
+
 ```{r daily_sleep}
 source("Functions/sleep_daily.R")
 
 print(sleep_daily_p1)
 print(sleep_daily_p2)
 print(sleep_daily_p3)
+```
+
+#### Day_of_the_Week {.tabset .tabset-fade .tabset-pills}
+
+```{r Day_of_the_Week}
 print(sleep_daily_p4)
 print(sleep_daily_p5)
 ```
 
 ### 24h_rolling {.tabset .tabset-fade .tabset-pills}
+
+#### 24h_rolling {.tabset .tabset-fade .tabset-pills}
 
 ```{r 24h_rolling}
 source("Functions/sleep_24h.R")
@@ -44,35 +53,18 @@ print(rolling_24h_p2)
 print(rolling_24h_p3)
 ```
 
-## Rest {.tabset .tabset-fade .tabset-pills}
-
-### sleep_24h_distribution {.tabset .tabset-fade .tabset-pills}
+#### sleep_24h_distribution {.tabset .tabset-fade .tabset-pills}
 
 ```{r sleep_24h_distribution}
-source("sleep_24h_distribution.R")
+source("Functions/sleep_24h_distribution.R")
 
-rbind(sleep24h_distribution_summary_all, 
-      sleep24h_distribution_summary_last7, 
-      sleep24h_distribution_summary_last28) %>%
-  ggplot(aes(x = sleep_24h_value, weight = num_minutes, group = subset, colour = subset)) + 
-  geom_density()
+print(sleep24h_distribution_p1)
+print(sleep24h_distribution_p2)
+print(sleep24h_distribution_p3)
 
-rbind(sleep24h_distribution_summary_all, 
-      sleep24h_distribution_summary_last7, 
-      sleep24h_distribution_summary_last28) %>%
-  ggplot(aes(x = subset, y = sleep_24h_value, weight = num_minutes, fill = subset)) + 
-  geom_boxplot(outlier.alpha = 0)
-
-rbind(sleep24h_distribution_summary_all, 
-      sleep24h_distribution_summary_last7, 
-      sleep24h_distribution_summary_last28) %>%
-  arrange(sleep_24h_value) %>%
-  group_by(subset) %>%
-  mutate(num_minutes_cdf = cumsum(num_minutes)) %>%
-  ungroup() %>%
-  ggplot(aes(x = sleep_24h_value, y = num_minutes_cdf, colour = subset)) + 
-  geom_line()
 ```
+
+## Rest {.tabset .tabset-fade .tabset-pills}
 
 ### nap {.tabset .tabset-fade .tabset-pills}
 

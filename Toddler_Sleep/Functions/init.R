@@ -8,6 +8,7 @@ options(stringsAsFactors = FALSE)
 library(dplyr)
 library(ggplot2)
 library(reshape2)
+library(lubridate)
 
 no_nap_days <- 8
 no_night_days <- 0
