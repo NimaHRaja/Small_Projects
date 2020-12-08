@@ -1,6 +1,6 @@
-source("init.R")
+# source("init.R")
 
-#### nap_start distribution ####
+#### nap_start ####
 
 # DF_aft %>% 
 #     ggplot(aes(x = nap_start_time)) + geom_density(colour = "blue")
@@ -19,17 +19,32 @@ source("init.R")
 #     # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
 #     ggplot(aes(y = nap_start_time)) + geom_boxplot(fill = "green")
 
-rbind(
-    DF_aft %>%
-        mutate(subset = "all"),
-    DF_aft %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days"),
-    DF_aft %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-        mutate(subset = "last 28 days")) %>%
+nap_desctiptive_p1 <- 
+    rbind(
+        DF_aft %>%
+            mutate(subset = "all"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+            mutate(subset = "last 07 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+            mutate(subset = "last 28 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 90) %>% 
+            mutate(subset = "last 90 days")) %>%
     # filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = nap_start_time, colour = subset)) + geom_density()
+
+
+
+nap_desctiptive_p2 <- 
+    DF_aft %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 28 &
+               difftime(Sys.time(), Date, units = "days") > 1) %>% 
+    mutate(week_day = wday(Date, label = TRUE)) %>%
+    ggplot(aes(x = week_day, y= nap_start_time)) + 
+    geom_boxplot(fill = "lightgreen") +
+    ggtitle("last 28 days")
 
 # rbind(
 #     DF_aft %>%
@@ -40,7 +55,7 @@ rbind(
 #     # filter(Date != '2020-06-17') %>% 
 #     ggplot(aes(y = nap_start_time, fill = subset)) + geom_boxplot()
 
-#### nap_end distribution ####
+#### nap_end ####
 
 # DF_aft %>% 
 #     ggplot(aes(x = nap_end_time)) + geom_density(colour = "blue")
@@ -60,17 +75,32 @@ rbind(
 #     # filter(nap_end_time >= as.POSIXct("12:00:00", format="%H:%M:%S")) %>%
 #     ggplot(aes(y = nap_end_time)) + geom_boxplot(fill = "green")
 
-rbind(
-    DF_aft %>%
-        mutate(subset = "all"),
-    DF_aft %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days"),
-    DF_aft %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-        mutate(subset = "last 28 days")) %>%
+nap_desctiptive_p3 <- 
+    rbind(
+        DF_aft %>%
+            mutate(subset = "all"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 07) %>% 
+            mutate(subset = "last 7 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+            mutate(subset = "last 28 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 90) %>% 
+            mutate(subset = "last 90 days")) %>%
     # filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = nap_end_time, colour = subset)) + geom_density()
+
+
+nap_desctiptive_p4 <- 
+    DF_aft %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 28 &
+               difftime(Sys.time(), Date, units = "days") > 1) %>% 
+    mutate(week_day = wday(Date, label = TRUE)) %>%
+    ggplot(aes(x = week_day, y= nap_end_time)) + 
+    geom_boxplot(fill = "lightgreen") +
+    ggtitle("last 28 days")
+
 
 # rbind(
 #     DF_aft %>%
@@ -81,7 +111,7 @@ rbind(
 #     # filter(Date != '2020-06-17') %>% 
 #     ggplot(aes(x = subset, y = nap_end_time, fill = subset)) + geom_boxplot()
 
-#### nap_length distribution ####
+#### nap_length ####
 
 # DF_aft %>% 
 #     ggplot(aes(x = nap_length)) + geom_density(colour = "blue")
@@ -98,17 +128,30 @@ rbind(
 #     # filter(Date != '2020-06-17') %>% 
 #     ggplot(aes(y = nap_length)) + geom_boxplot(fill = "green")
 
-rbind(
-    DF_aft %>%
-        mutate(subset = "all"),
-    DF_aft %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-        mutate(subset = "last 7 days"),
-    DF_aft %>%
-        filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-        mutate(subset = "last 28 days")) %>%
-    filter(Date != '2020-06-17') %>% 
+nap_desctiptive_p5 <-
+    rbind(
+        DF_aft %>%
+            mutate(subset = "all"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+            mutate(subset = "last 07 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+            mutate(subset = "last 28 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 90) %>% 
+            mutate(subset = "last 90 days")) %>%
+    # filter(Date != '2020-06-17') %>% 
     ggplot(aes(x = nap_length, colour = subset)) + geom_density()
+
+nap_desctiptive_p6 <- 
+    DF_aft %>% 
+    filter(difftime(Sys.time(), Date, units = "days") <= 28 &
+               difftime(Sys.time(), Date, units = "days") > 1) %>% 
+    mutate(week_day = wday(Date, label = TRUE)) %>%
+    ggplot(aes(x = week_day, y= nap_length)) + 
+    geom_boxplot(fill = "lightgreen") +
+    ggtitle("last 28 days")
 
 # rbind(
 #     DF_aft %>%

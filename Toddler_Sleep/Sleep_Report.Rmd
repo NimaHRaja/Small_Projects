@@ -64,49 +64,34 @@ print(sleep24h_distribution_p3)
 
 ```
 
-## Rest {.tabset .tabset-fade .tabset-pills}
+## nap {.tabset .tabset-fade .tabset-pills}
 
-### nap {.tabset .tabset-fade .tabset-pills}
+### nap_start {.tabset .tabset-fade .tabset-pills}  
 
-```{r nap}
+```{r nap_start}
 source("nap_desctiptive.R")
 
-rbind(
-  DF_aft %>%
-    mutate(subset = "all"),
-  DF_aft %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
-  DF_aft %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
-  # filter(Date != '2020-06-17') %>% 
-  ggplot(aes(x = nap_start_time, colour = subset)) + geom_density()
+print(nap_desctiptive_p1)
+print(nap_desctiptive_p2)
+```
 
-rbind(
-  DF_aft %>%
-    mutate(subset = "all"),
-  DF_aft %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
-  DF_aft %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
-  # filter(Date != '2020-06-17') %>% 
-  ggplot(aes(x = nap_end_time, colour = subset)) + geom_density()
+### nap_end {.tabset .tabset-fade .tabset-pills}  
 
-rbind(
-  DF_aft %>%
-    mutate(subset = "all"),
-  DF_aft %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
-  DF_aft %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
-  filter(Date != '2020-06-17') %>% 
-  ggplot(aes(x = nap_length, colour = subset)) + geom_density()
+```{r nap_end}
+print(nap_desctiptive_p3)
+print(nap_desctiptive_p4)
+```
 
+### nap_length {.tabset .tabset-fade .tabset-pills}  
+
+```{r nap_length}
+print(nap_desctiptive_p5)
+print(nap_desctiptive_p6)
+```
+
+### nap_rest {.tabset .tabset-fade .tabset-pills}  
+  
+```{r}
 DF_aft %>% 
   mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
   ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
@@ -147,6 +132,8 @@ rbind(
     DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 28), "Last 28 days")) %>% 
   ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
 ```
+
+## Rest {.tabset .tabset-fade .tabset-pills}
 
 ### night {.tabset .tabset-fade .tabset-pills}
 
