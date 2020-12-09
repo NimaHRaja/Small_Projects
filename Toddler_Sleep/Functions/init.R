@@ -37,7 +37,8 @@ DF_aft <-
                strftime(nap_start, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
     mutate(nap_end_time = 
                strftime(nap_end, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
-    mutate(day_month = format(Start,"%m-%d"))
+    mutate(day_month = format(Start,"%m-%d")) %>%
+    mutate(week_day = wday(Date, label = TRUE))
 
 # removing anomalies (days she didn't nap)
 DF_aft <- 
@@ -65,7 +66,8 @@ DF_night <-
                strftime(night_start, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
     mutate(night_end_time = 
                strftime(night_end, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
-    mutate(day_month = format(Start,"%m-%d"))
+    mutate(day_month = format(Start,"%m-%d")) %>%
+    mutate(week_day = wday(Date, label = TRUE))
 
 DF_night <- 
     DF_night %>% filter(Date != Sys.Date()) # today's nap shouldn't be classified as night sleep.

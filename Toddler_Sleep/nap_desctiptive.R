@@ -41,7 +41,6 @@ nap_desctiptive_p2 <-
     DF_aft %>% 
     filter(difftime(Sys.time(), Date, units = "days") <= 28 &
                difftime(Sys.time(), Date, units = "days") > 1) %>% 
-    mutate(week_day = wday(Date, label = TRUE)) %>%
     ggplot(aes(x = week_day, y= nap_start_time)) + 
     geom_boxplot(fill = "lightgreen") +
     ggtitle("last 28 days")
@@ -96,7 +95,6 @@ nap_desctiptive_p4 <-
     DF_aft %>% 
     filter(difftime(Sys.time(), Date, units = "days") <= 28 &
                difftime(Sys.time(), Date, units = "days") > 1) %>% 
-    mutate(week_day = wday(Date, label = TRUE)) %>%
     ggplot(aes(x = week_day, y= nap_end_time)) + 
     geom_boxplot(fill = "lightgreen") +
     ggtitle("last 28 days")
@@ -148,7 +146,6 @@ nap_desctiptive_p6 <-
     DF_aft %>% 
     filter(difftime(Sys.time(), Date, units = "days") <= 28 &
                difftime(Sys.time(), Date, units = "days") > 1) %>% 
-    mutate(week_day = wday(Date, label = TRUE)) %>%
     ggplot(aes(x = week_day, y= nap_length)) + 
     geom_boxplot(fill = "lightgreen") +
     ggtitle("last 28 days")
@@ -184,15 +181,46 @@ nap_desctiptive_p6 <-
 #     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month, colour = subset)) + 
 #     geom_point()
 
-DF_aft %>% 
-    mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
-    # filter(Date != '2020-06-17') %>% 
-    # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
+# DF_aft %>% 
+#     mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
+#     # filter(Date != '2020-06-17') %>% 
+#     # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
+#     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
+#     geom_point(colour = "green") +
+#     geom_text(aes(colour = recent)) + 
+#     geom_smooth(method = "lm") + 
+#     theme(legend.position = "none")
+
+# rbind(
+#     DF_aft %>%
+#         mutate(subset = "all"),
+#     DF_aft %>%
+#         filter(difftime(Sys.time(), Date, units = "days") <= 90) %>% 
+#         mutate(subset = "last 90 days"),
+#     DF_aft %>%
+#         filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
+#         mutate(subset = "last 28 days"),
+#     DF_aft %>%
+#         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+#         mutate(subset = "last 07 days")) %>% 
+#     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month, colour = subset)) + 
+#     geom_text()
+
+nap_desctiptive_p7 <- 
+    rbind(
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 28 &
+                       difftime(Sys.time(), Date, units = "days") > 7) %>%
+            mutate(subset = "last 28 days"),
+        DF_aft %>%
+            filter(difftime(Sys.time(), Date, units = "days") <= 7) %>%
+            mutate(subset = "last 07 days")) %>%   
     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
-    geom_point(colour = "green") +
-    geom_text(aes(colour = recent)) + 
+    geom_text(aes(colour = subset)) + 
     geom_smooth(method = "lm") + 
     theme(legend.position = "none")
+
+
 
 # rbind(
 #     DF_aft %>%
@@ -207,9 +235,9 @@ DF_aft %>%
 #     geom_text() + 
 #     geom_smooth(method = "lm")
 
-#### start/end/length v time ####
 
-DF_aft %>% 
+nap_desctiptive_p8 <- 
+    DF_aft %>% 
     # filter(Date != '2020-06-17') %>% 
     select(Date, nap_start_time, nap_end_time) %>% 
     melt(id.vars = "Date") %>% 
