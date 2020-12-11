@@ -72,6 +72,7 @@ print(sleep24h_distribution_p3)
 source("nap_desctiptive.R")
 
 print(nap_desctiptive_p1)
+print(nap_desctiptive_p12)
 print(nap_desctiptive_p2)
 ```
 
@@ -79,6 +80,7 @@ print(nap_desctiptive_p2)
 
 ```{r nap_end}
 print(nap_desctiptive_p3)
+print(nap_desctiptive_p13)
 print(nap_desctiptive_p4)
 ```
 
@@ -86,51 +88,23 @@ print(nap_desctiptive_p4)
 
 ```{r nap_length}
 print(nap_desctiptive_p5)
+print(nap_desctiptive_p14)
 print(nap_desctiptive_p6)
+print(nap_desctiptive_p7)
 ```
 
-### nap_rest {.tabset .tabset-fade .tabset-pills}  
+### nap_start_end {.tabset .tabset-fade .tabset-pills}  
   
-```{r}
-DF_aft %>% 
-  mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
-  ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
-  geom_point(colour = "green") +
-  geom_text(aes(colour = recent)) + 
-  geom_smooth(method = "lm") + 
-  theme(legend.position = "none")
+```{r nap_start_end}
+print(nap_desctiptive_p8)
+print(nap_desctiptive_p9)
+print(nap_desctiptive_p10)
+```
 
-DF_aft %>% 
-  # filter(Date != '2020-06-17') %>% 
-  select(Date, nap_start_time, nap_end_time) %>% 
-  melt(id.vars = "Date") %>% 
-  ggplot(aes(x = Date, y = value, colour = variable)) + 
-  geom_line() + geom_point()
+### nap_misc {.tabset .tabset-fade .tabset-pills}  
 
-DF_aft %>% 
-  # filter(Date != '2020-06-17') %>% 
-  ggplot(aes(x = Date, y = nap_length))+ 
-  geom_bar(stat = "identity", fill = "blue")
-
-prob_nap %>% ggplot(aes(x = time, y = prob)) + geom_point(colour = "blue")
-
-rbind(
-  get_prob_nap_start(
-    DF_aft, "All"),
-  get_prob_nap_start(
-    DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 7), "Last 7 days"),
-  get_prob_nap_start(
-    DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 28), "Last 28 days")) %>% 
-  ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
-
-rbind(
-  get_prob_nap_end(
-    DF_aft, "All"),
-  get_prob_nap_end(
-    DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 7), "Last 7 days"),
-  get_prob_nap_end(
-    DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 28), "Last 28 days")) %>% 
-  ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
+```{r nap_misc}
+print(nap_desctiptive_p11)
 ```
 
 ## Rest {.tabset .tabset-fade .tabset-pills}

@@ -44,7 +44,7 @@ sleep_daily_p3 <-
         DF_24h_summary %>%
             filter(Date %>% strftime(format ="%H:%M:%S") %in% c("10:00:00","11:00:00")) %>%
             filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-            mutate(subset = "last 7 days")) %>%
+            mutate(subset = "last 07 days")) %>%
     mutate(sleep_24h = sleep_24h / 60) %>%
     filter(difftime(Date, min(Date), units = "days") >= 1) %>% 
     ggplot(aes(x = Date, y = sleep_24h, colour = subset)) + 
