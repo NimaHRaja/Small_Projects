@@ -1,5 +1,8 @@
 ### Finalised.
-### Init loads the libraries, reads the raw data, and prepares the necessary dataframes.
+### loads the libraries,
+### reads the raw data, 
+### and prepares the necessary dataframes.
+
 
 
 #### Init ####
@@ -10,8 +13,7 @@ library(ggplot2)
 library(reshape2)
 library(lubridate)
 
-no_nap_days <- 8
-no_night_days <- 0
+
 
 #### Read and Clean ####
 
@@ -22,6 +24,8 @@ DF_raw <- DF_raw %>%
     mutate(End = as.POSIXct(End)) %>%
     mutate(Start2 = Start + 24*60*60) %>%
     mutate(End2 = End + 24*60*60)
+
+
 
 #### Create DF_aft ####
 
@@ -38,19 +42,15 @@ DF_aft <-
     mutate(nap_end_time = 
                strftime(nap_end, format="%H:%M:%S") %>% as.POSIXct(format="%H:%M:%S")) %>%
     mutate(day_month = format(Start,"%m-%d")) %>%
-    mutate(week_day = wday(Date, label = TRUE))
+    mutate(week_day = wday(Date, label = TRUE)) %>%
+    as.data.frame()
 
-# removing anomalies (days she didn't nap)
+# removing anomalies (days she didn't take a nap)
 DF_aft <- 
     DF_aft %>% 
-    filter(Date != '2020-06-17') %>% 
-    filter(Date != '2020-07-25') %>% 
-    filter(Date != '2020-08-28') %>% 
-    filter(Date != '2020-08-30') %>% 
-    filter(Date != '2020-09-21') %>% 
-    filter(Date != '2020-09-25') %>% 
-    filter(Date != '2020-10-23') %>% 
-    filter(Date != '2020-11-15') 
+    filter(!Date %in% (read.csv("no-nap-days.csv") %>% select(Date) %>% unlist() %>% as.Date()))
+
+
 
 #### Create DF_night ####
 
