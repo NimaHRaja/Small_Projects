@@ -1,4 +1,5 @@
 # source("Functions/init.R")
+# Generates graphs to describe nap
 
 #### nap_start ####
 
@@ -33,8 +34,8 @@ nap_desctiptive_p3 <-
         DF_aft %>%
             mutate(subset = "all"),
         DF_aft %>%
-            filter(difftime(Sys.time(), Date, units = "days") <= 07) %>% 
-            mutate(subset = "last 7 days"),
+            filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
+            mutate(subset = "last 07 days"),
         DF_aft %>%
             filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
             mutate(subset = "last 28 days"),
@@ -122,6 +123,7 @@ nap_desctiptive_p8 <-
     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
     geom_text(aes(colour = subset)) + 
     geom_smooth(method = "lm") + 
+    ggtitle("last 28 and last 7 days") +
     theme(legend.position = "none")
 
 nap_desctiptive_p9 <- 
@@ -129,7 +131,8 @@ nap_desctiptive_p9 <-
     mutate(week_day = as.character(week_day)) %>%
     filter(difftime(Sys.time(), Date, units = "days") <= 28) %>%   
     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month, colour = week_day)) + 
-    geom_text()
+    geom_text() +
+    ggtitle("last 28 days")
 
 # rbind(
 #     DF_aft %>%
