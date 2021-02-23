@@ -86,31 +86,6 @@ nap_desctiptive_p7 <-
 
 #### nap_end v nap_start ####
 
-# DF_aft %>% 
-#     mutate(recent = difftime(Sys.time(), Date, units = "days") <= 7) %>%
-#     # filter(Date != '2020-06-17') %>% 
-#     # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
-#     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month)) + 
-#     geom_point(colour = "green") +
-#     geom_text(aes(colour = recent)) + 
-#     geom_smooth(method = "lm") + 
-#     theme(legend.position = "none")
-
-# rbind(
-#     DF_aft %>%
-#         mutate(subset = "all"),
-#     DF_aft %>%
-#         filter(difftime(Sys.time(), Date, units = "days") <= 90) %>% 
-#         mutate(subset = "last 90 days"),
-#     DF_aft %>%
-#         filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-#         mutate(subset = "last 28 days"),
-#     DF_aft %>%
-#         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-#         mutate(subset = "last 07 days")) %>% 
-#     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month, colour = subset)) + 
-#     geom_text()
-
 nap_desctiptive_p8 <- 
     rbind(
         DF_aft %>%
@@ -133,19 +108,6 @@ nap_desctiptive_p9 <-
     ggplot(aes(x = nap_start_time, y = nap_end_time, label = day_month, colour = week_day)) + 
     geom_text() +
     ggtitle("last 28 days")
-
-# rbind(
-#     DF_aft %>%
-#         mutate(subset = "all"),
-#     DF_aft %>%
-#         filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-#         mutate(subset = "last 7 days")) %>%
-#     # filter(Date != '2020-06-17') %>% 
-#     # filter(nap_start_time <= as.POSIXct("16:00:00", format="%H:%M:%S")) %>% 
-#     ggplot(aes(x = nap_start_time, y = nap_end_time, colour = subset, label = day_month)) + 
-#     geom_point() +
-#     geom_text() + 
-#     geom_smooth(method = "lm")
 
 nap_desctiptive_p10 <- 
     DF_aft %>% 
@@ -248,10 +210,6 @@ nap_desctiptive_p13 <-
         get_prob_nap_end(
             DF_aft %>% filter(difftime(Sys.time(), Date, units = "days") <= 90), "Last 90 days")) %>% 
     ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
-
-
-
-
 
 get_prob_nap_length <- function(df_local, subset){
     inner_join(

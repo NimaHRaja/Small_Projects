@@ -107,51 +107,34 @@ print(nap_desctiptive_p10)
 print(nap_desctiptive_p11)
 ```
 
-## Rest {.tabset .tabset-fade .tabset-pills}
+## night {.tabset .tabset-fade .tabset-pills}
 
-### night {.tabset .tabset-fade .tabset-pills}
+### night_start {.tabset .tabset-fade .tabset-pills}  
 
-```{r night}
+```{r night_start}
 source("night_descriptive.R")
 
-rbind(
-  DF_night %>%
-    mutate(subset = "all"),
-  DF_night %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
-  DF_night %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
-  # filter(Date != Sys.Date()) %>%
-  ggplot(aes(x = night_start_time, colour = subset)) + geom_density()
+print(night_desctiptive_p1)
+print(night_desctiptive_p2)
+```
 
-rbind(
-  DF_night %>%
-    mutate(subset = "all"),
-  DF_night %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
-  DF_night %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
-  # filter(Date != '2020-06-17') %>% 
-  filter(Date != Sys.Date()) %>%
-  ggplot(aes(x = night_end_time, colour = subset)) + geom_density()
+### night_end {.tabset .tabset-fade .tabset-pills}  
 
-rbind(
-  DF_night %>%
-    filter(!(Date == Sys.Date() & strftime(night_start, format="%H:%M:%S") < "16:00:00")) %>%
-    mutate(subset = "all"),
-  DF_night %>%
-    filter(!(Date == Sys.Date() & strftime(night_start, format="%H:%M:%S") < "16:00:00")) %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 7) %>% 
-    mutate(subset = "last 7 days"),
-  DF_night %>%
-    filter(!(Date == Sys.Date() & strftime(night_start, format="%H:%M:%S") < "16:00:00")) %>%
-    filter(difftime(Sys.time(), Date, units = "days") <= 28) %>% 
-    mutate(subset = "last 28 days")) %>%
-  ggplot(aes(x = night_length, colour = subset)) + geom_density()
+```{r night_end}
+print(night_desctiptive_p3)
+print(night_desctiptive_p4)
+```
+
+### night_length {.tabset .tabset-fade .tabset-pills}  
+
+```{r night_length}
+print(night_desctiptive_p5)
+# print(nap_desctiptive_p14)
+print(night_desctiptive_p6)
+print(night_desctiptive_p7)
+print(night_desctiptive_p8)
+print(night_desctiptive_p9)
+
 
 DF_night %>% 
   filter(Date != Sys.Date()) %>%
@@ -196,6 +179,8 @@ rbind(
   ggplot(aes(x = time, y = prob, colour = subset)) + geom_line()
 
 ```
+
+## Rest {.tabset .tabset-fade .tabset-pills}
 
 ### start_end_boxplots {.tabset .tabset-fade .tabset-pills}
 
