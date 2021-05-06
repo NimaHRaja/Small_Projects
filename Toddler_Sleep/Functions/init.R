@@ -3,7 +3,7 @@
 ### reads the raw data, 
 ### and prepares the necessary dataframes.
 
-
+no_night_days <- 0
 
 #### Init ####
 

@@ -16,7 +16,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r init, warning=FALSE}
+```{r init, warning=FALSE, echo=FALSE}
 source("Functions/init.R")
 ```
 

@@ -1,4 +1,4 @@
-source("init.R")
+# source("init.R")
 
 DF <- read.csv("NightWeaning_Log.csv") %>% 
     mutate(Start = as.POSIXct(Start, tz = "GMT")) %>%
@@ -12,6 +12,12 @@ NightWeaning_test1 <-
 
 NightWeaning_p1 <- 
     DF %>% arrange(desc(Start)) %>%
+    ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
+    geom_col( position = position_stack(reverse = TRUE))
+
+NightWeaning_p1p <-
+    DF %>% arrange(desc(Start)) %>%
+    filter(difftime(Sys.time(), Start, units = "days") <= 10) %>%
     ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
     geom_col( position = position_stack(reverse = TRUE))
 
@@ -30,6 +36,12 @@ DF2 <-
 
 NightWeaning_p2 <-
     DF2 %>% arrange(desc(Start)) %>%
+    ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
+    geom_col( position = position_stack(reverse = TRUE))
+
+NightWeaning_p2p <-
+    DF2 %>% arrange(desc(Start)) %>%
+    filter(difftime(Sys.time(), Start, units = "days") <= 10) %>%
     ggplot(aes(x = Date, y = duration, fill = Description, group = Start)) + 
     geom_col( position = position_stack(reverse = TRUE))
 
